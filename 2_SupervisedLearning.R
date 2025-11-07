@@ -8,7 +8,7 @@
 set.seed(66)
 
 # 1. split up the dataset into a training and test set
-split_heart = sample.split(prepped_heart_df$TenYearCHD, .5)
+split_heart = sample.split(prepped_heart_df$TenYearCHD, .75)
 
 train_heart = prepped_heart_df[split_heart, ]
 test_heart  = prepped_heart_df[!split_heart, ]
@@ -72,8 +72,8 @@ test_heart_rf  = prepped_heart_df[!split_heart_rf, ]
 
 heart_rf = randomForest(TenYearCHD ~ ., data = train_heart_rf, 
                         importance = T,  # assesses importance of each predictor for accuracy
-                        ntree = 500,
-                        mtry = 10)
+                        ntree = 500, # start with 500 trees (default setting if you don't specify it)
+                        mtry = 10) # number of predictors randomly selected for each split in the tree
 heart_rf
 
 ## OUTPUT: includes a confusion matrix, out-of-bag (OOB) error i.e., misclassification rate
@@ -110,8 +110,11 @@ train_heart_rf_linear = prepped_heart_df[split_heart_rf_linear, ]
 test_heart_rf_linear  = prepped_heart_df[!split_heart_rf_linear, ]
 
 # 2. Build a random forest model to predict cholesterol levels
-heart_rf_chol = randomForest(totChol ~ ., data = train_heart_rf_linear,
-                             importance = T)
+heart_rf_chol = randomForest(totChol ~ ., 
+                             data = train_heart_rf_linear,
+                             importance = T, 
+                             ntree = 500,
+                             mtry = 10)
 heart_rf_chol
 
 heart_rf_chol_pred = predict(heart_rf_chol, newdata = test_heart_rf_linear, 'response')

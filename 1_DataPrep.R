@@ -1,6 +1,6 @@
 ## CCM Machine Learning in R Workshop: Data Preparation
 
-setwd("/Users/shireenparimoo/Documents/Teaching/R Workshop - November 2024/data/")
+setwd("/Users/shireenparimoo/Documents/Teaching/R Workshop - November 2025/data/")
 
 #
 ## 00. Load libraries ----------------------------------------------------

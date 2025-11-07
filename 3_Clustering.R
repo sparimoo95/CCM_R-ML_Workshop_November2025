@@ -13,7 +13,7 @@ heart_kmeans <- kmeans(prepped_heart_df_cluster, centers = 3, nstart = 25)
 heart_kmeans
 
 # The kmeans() function returns an object of class “kmeans” with information about the partition:
-#   1. cluster. Indicates the cluster to which each data point is allocated.
+#   1. cluster. Indicates the cluster to which each data point/observation is allocated.
 #   2. centers. A matrix of cluster centers.
 #   3. size. The number of data points in each cluster.
 #.  4. totss. The total sum of squares (within + between).
