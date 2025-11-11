@@ -19,7 +19,7 @@ summary(heart_glm)
 
 # 3. Apply the model to the test set and generate the predictions
 heart_glm_pred = predict(heart_glm, newdata = test_heart, type = "response")
-heart_glm_pred
+heart_glm_pred # shows the predictions for each observation
 
 # 4. Classification accuracy
 # if predicted value is greater than 0.5, then set the prediction to "1" i.e., will develop heart disease 
@@ -30,6 +30,18 @@ confusionMatrix(factor(heart_glm_perf),
                 factor(test_heart$TenYearCHD), 
                 positive = as.character(1))
 
+## confusion matrix outputs:
+## Kappa: measures agreement between predictions and actual values, accounting for chance, want values closer to 1
+## NIR = no information rate i.e., accuracy you'd get by always predicting the most common class; often high in cases with high class imbalance
+## Sensitivity = of all people who actually developed heart disease, what proportion were identified correctly?
+## Specificty = of all people who did not devleop heart disease, what proportion were correctly rejected?
+## Precision/PPV = of all people we predicted would develop heart disease, what proportion actually did?
+## NPV = of all people we predicted wouldn't develop heart disease, what proportion actually didn't?
+## Prevalence = incidence of heart disease in the dataset
+## Detection rate = proportion of dataset CORRECTLY identified as having heart disease
+## Detection prevalence = proportion of dataset identified as having heart disease
+## Balanced accuracy = average of sensitivity and specificity 
+
 # 5 Evaluate variable importance using the varImp function from the caret package
 heart_glm_importances <- varImp(heart_glm) %>%
   as.data.frame() %>% 
@@ -38,7 +50,7 @@ heart_glm_importances <- varImp(heart_glm) %>%
   arrange(desc(Overall)) %>% # arrange variables according to their importance
   top_n(5) %>% # select top 5 most important variables
   # convert predictor to factor
-  mutate(predictor = as.factor(predictor))
+  mutate(predictor = as.factor(predictor)) 
 
 # clean up the naming of the predictors 
 levels(heart_glm_importances$predictor) = c("Age", "HS Education", "Blood Glucose", "Male Sex", "Systolic BP")
@@ -54,7 +66,7 @@ ggplot(heart_glm_importances,
 # 7. Plot the ROC curve and estimate the AUC
 heart_glm_roc = roc(test_heart$TenYearCHD, heart_glm_pred)
 heart_glm_roc
-# model has a ~73% probability of correctly distinguishing between a positive and a negative instance
+# model has a ~72% probability of correctly distinguishing between a positive and a negative instance
 plot(heart_glm_roc)
 
 ## CHALLENGE: do the most important predictors change with a different training/test split?
@@ -65,13 +77,13 @@ plot(heart_glm_roc)
 
 set.seed(66)
 
-split_heart_rf = sample.split(prepped_heart_df$TenYearCHD, .5)
+split_heart_rf = sample.split(prepped_heart_df$TenYearCHD, .75)
 
 train_heart_rf = prepped_heart_df[split_heart_rf, ]
 test_heart_rf  = prepped_heart_df[!split_heart_rf, ]
 
 heart_rf = randomForest(TenYearCHD ~ ., data = train_heart_rf, 
-                        importance = T,  # assesses importance of each predictor for accuracy
+                        importance = T,  # assesses importance of each predictor for accuracy during training
                         ntree = 500, # start with 500 trees (default setting if you don't specify it)
                         mtry = 10) # number of predictors randomly selected for each split in the tree
 heart_rf
@@ -83,7 +95,7 @@ heart_rf
 predict(heart_rf, newdata = test_heart_rf)
 heart_rf_pred = predict(heart_rf, newdata = test_heart_rf, type = 'response')
 
-# plot variable importance
+# plot variable importance from model training
 varImpPlot(heart_rf, 
            main = "Variable Importance for Predicting Heart Disease", 
            bg = "brown")
@@ -104,7 +116,7 @@ varImpPlot(heart_rf,
 set.seed(66)
 
 # 1. split up the dataset into a training and test set
-split_heart_rf_linear = sample.split(prepped_heart_df$sysBP, .5)
+split_heart_rf_linear = sample.split(prepped_heart_df$totChol, .75)
 
 train_heart_rf_linear = prepped_heart_df[split_heart_rf_linear, ]
 test_heart_rf_linear  = prepped_heart_df[!split_heart_rf_linear, ]
@@ -118,10 +130,13 @@ heart_rf_chol = randomForest(totChol ~ .,
 heart_rf_chol
 
 heart_rf_chol_pred = predict(heart_rf_chol, newdata = test_heart_rf_linear, 'response')
+## response provides predictions on the original scale i.e., cholesterol levels
+## this is the default setting for regression models, don't actually need to specify ti
 
 # plot variable importance
 varImpPlot(heart_rf_chol, 
            main = "Variable Importance for Predicting Cholesterol Levels", 
            bg = "brown")
-## %Increase in MSE = how much the mean squared error would increase if a variable were omitted from the model
-
+## %Increase in MSE = how much the mean squared error would increase if a variable were randomly permuted/scrambled
+## Inc Node Purity = total reduction in residual sum of squares (RSS) across all splits on that variable; higher values indicate how effectively a variable separates sub-groups
+## e.g., splitting on BMI more effectively separates those with high vs low cholesterol than splitting on diaetes
