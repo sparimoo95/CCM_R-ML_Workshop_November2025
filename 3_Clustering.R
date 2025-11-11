@@ -16,9 +16,9 @@ heart_kmeans
 #   1. cluster. Indicates the cluster to which each data point/observation is allocated.
 #   2. centers. A matrix of cluster centers.
 #   3. size. The number of data points in each cluster.
-#.  4. totss. The total sum of squares (within + between).
-#.  5. tot.withinss The total within-cluster sum of squares across clusters.
-#.  6. withinss. The within-cluster sum of squares for each cluster.
+#   4. totss. The total sum of squares (within + between).
+#   5. tot.withinss The total within-cluster sum of squares across clusters.
+#   6. withinss. The within-cluster sum of squares for each cluster.
 
 heart_kmeans$cluster
 heart_kmeans$centers
@@ -30,6 +30,7 @@ heart_kmeans$withinss
 # what are the characteristics of each sub-group identified through clustering?
 aggregate(prepped_heart_df_cluster, by=list(cluster=heart_kmeans$cluster), mean)
 ## it's not easy to interpret this output because all the variables are scaled
+## (scaling is necessary for k-means but makes the means less interpretable in original units)
 
 # visualize the clusters
 fviz_cluster(heart_kmeans, 
